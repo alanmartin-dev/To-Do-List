@@ -1,29 +1,14 @@
 # 📋 To-Do List CLI (Python 3.14)
 
 Aplicación de lista de tareas para consola, con autenticación obligatoria y
-persistencia en JSON. Solo usa librería estándar de Python (sin `pip install`).
-
+persistencia en JSON.
 ## Archivos
 
 | Archivo                   | Descripción                                                        |
 |----------------------------|--------------------------------------------------------------------|
 | `main.py`                 | Aplicación principal (login + menú de tareas).                     |
 | `generar_credenciales.py` | Utilidad para crear/cambiar el usuario y contraseña del `.env`.    |
-| `.env`                    | Credenciales (usuario + hash de contraseña + salt). **No compartir en Git.** |
 | `tareas.json`              | Se crea automáticamente al agregar la primera tarea.               |
-
-## Credenciales de demostración
-
-El `.env` incluido ya trae un usuario de prueba:
-
-- **Usuario:** `admin`
-- **Contraseña:** `Admin123!`
-
-> ⚠️ La contraseña **nunca** se guarda en texto plano: el `.env` solo contiene
-> `APP_USERNAME`, `APP_PASSWORD_HASH` (PBKDF2-HMAC-SHA256, 100 000 iteraciones)
-> y `APP_SALT`. Al iniciar sesión, la contraseña que escribas se hashea con el
-> mismo salt y se compara contra ese hash usando `hmac.compare_digest`
-> (comparación segura contra *timing attacks*).
 
 Para crear tus propias credenciales:
 
@@ -66,9 +51,6 @@ Cada tarea tiene exactamente 5 campos:
 - `fecha_limite` en formato `YYYY-MM-DD` (opcional)
 
 ## Notas de diseño
-
-- **Sin dependencias externas**: el `.env` se parsea manualmente
-  (`cargar_env`), evitando requerir `python-dotenv`.
 - **Colores ANSI**: si tu terminal no soporta ANSI (algunas consolas antiguas
   de Windows), instala Windows Terminal o usa PowerShell moderno.
 - Código organizado en secciones: estilo de consola, auth, modelo de datos,
