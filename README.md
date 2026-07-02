@@ -1,0 +1,76 @@
+# 📋 To-Do List CLI (Python 3.14)
+
+Aplicación de lista de tareas para consola, con autenticación obligatoria y
+persistencia en JSON. Solo usa librería estándar de Python (sin `pip install`).
+
+## Archivos
+
+| Archivo                   | Descripción                                                        |
+|----------------------------|--------------------------------------------------------------------|
+| `main.py`                 | Aplicación principal (login + menú de tareas).                     |
+| `generar_credenciales.py` | Utilidad para crear/cambiar el usuario y contraseña del `.env`.    |
+| `.env`                    | Credenciales (usuario + hash de contraseña + salt). **No compartir en Git.** |
+| `tareas.json`              | Se crea automáticamente al agregar la primera tarea.               |
+
+## Credenciales de demostración
+
+El `.env` incluido ya trae un usuario de prueba:
+
+- **Usuario:** `admin`
+- **Contraseña:** `Admin123!`
+
+> ⚠️ La contraseña **nunca** se guarda en texto plano: el `.env` solo contiene
+> `APP_USERNAME`, `APP_PASSWORD_HASH` (PBKDF2-HMAC-SHA256, 100 000 iteraciones)
+> y `APP_SALT`. Al iniciar sesión, la contraseña que escribas se hashea con el
+> mismo salt y se compara contra ese hash usando `hmac.compare_digest`
+> (comparación segura contra *timing attacks*).
+
+Para crear tus propias credenciales:
+
+```bash
+python3 generar_credenciales.py
+```
+
+## Ejecución
+
+```bash
+python3 main.py
+```
+
+1. Ingresa usuario y contraseña (la contraseña se escribe **enmascarada**,
+   no se muestra en pantalla). Tienes **3 intentos**; si fallas los 3, el
+   programa se cierra automáticamente.
+2. Una vez dentro, usa el menú numérico para:
+   - Ver todas las tareas / filtrar por estado
+   - Agregar una tarea
+   - Editar una tarea (título, fecha límite, prioridad)
+   - Cambiar el estado: `Pendiente`, `Realizada` u `Olvidada`
+   - Eliminar una tarea
+
+## Modelo de datos (`tareas.json`)
+
+Cada tarea tiene exactamente 5 campos:
+
+```json
+{
+    "id": 1,
+    "titulo": "Terminar informe de estadística",
+    "estado": "Pendiente",
+    "fecha_limite": "2026-07-10",
+    "prioridad": "Alta"
+}
+```
+
+- `estado` ∈ `{"Pendiente", "Realizada", "Olvidada"}`
+- `prioridad` ∈ `{"Alta", "Media", "Baja"}`
+- `fecha_limite` en formato `YYYY-MM-DD` (opcional)
+
+## Notas de diseño
+
+- **Sin dependencias externas**: el `.env` se parsea manualmente
+  (`cargar_env`), evitando requerir `python-dotenv`.
+- **Colores ANSI**: si tu terminal no soporta ANSI (algunas consolas antiguas
+  de Windows), instala Windows Terminal o usa PowerShell moderno.
+- Código organizado en secciones: estilo de consola, auth, modelo de datos,
+  persistencia, validación de entradas y UI del menú — cada una con su propia
+  responsabilidad para facilitar mantenimiento y pruebas.
